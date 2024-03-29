@@ -1,4 +1,19 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+	webpack: (config, options) => {
+		config.module.rules.push({
+			test: /\.mp3/,
+			use: [
+				options.defaultLoaders.babel,
+				{
+					loader: 'file-loader',
+					// options: pluginOptions.options,
+				},
+			],
+		})
 
-export default nextConfig;
+		return config
+	},
+}
+
+export default nextConfig

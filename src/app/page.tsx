@@ -1,113 +1,136 @@
-import Image from "next/image";
+'use client'
+
+// @ts-expect-error types
+import useSound from 'use-sound'
+import { useCallback, useMemo, useState } from 'react'
+import morse, { decode } from './utils/morse'
+import { createMorseMedia } from './utils/audio'
+
+console.log('env', process.env)
 
 export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+	const [message, setMessage] = useState('')
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+	const [playDi] = useSound('/audio/di-deez.mp3')
+	const [playDah] = useSound('audio/di-deez.mp3')
 
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+	const handleMessage = useCallback((e: any) => {
+		setMessage(e.target.value)
+	}, [])
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+	const morseMessage = useMemo(() => {
+		return morse.encode(message)
+	}, [message])
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
+	const handleGenerateAudio = useCallback(async () => {
+		const response = await createMorseMedia(morseMessage)
+	}, [morseMessage])
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+	return (
+		<main className="flex min-h-screen flex-col items-center justify-between p-4 sm:p-8 md:p-16 lg:p-24">
+			<div className="max-w-5xl w-full flex flex-col bg-gray-800/30 border border-gray-800 gap-4 p-4 rounded-xl card">
+				<h1 className="text-3xl">Morse Media Maker</h1>
+				<p>
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Nunc
+					consequat interdum varius sit amet mattis vulputate. Tortor at risus viverra adipiscing at in.
+				</p>
+				<form className="gap-4 flex flex-col">
+					{/*  */}
+					{/*  */}
+					<label className="form-control w-full">
+						<div className="label">
+							<span className="label-text">What would you like to say?</span>
+							{/* <span className="label-text-alt">Top Right label</span> */}
+						</div>
+						<input
+							type="text"
+							placeholder="Type your message here..."
+							className="input input-bordered input-primary w-full"
+							maxLength={100}
+							onChange={handleMessage}
+							value={message}
+						/>
+						{/* <div className="label">
+							<span className="label-text-alt">Bottom Left label</span>
+							<span className="label-text-alt">Bottom Right label</span>
+						</div> */}
+					</label>
+
+					{/*  */}
+					{/*  */}
+					{message && (
+						<div className="mockup-code">
+							<pre className="">
+								<code>Input: {message}</code>
+							</pre>
+							<div className="whitespace-break-spaces	px-[2ch] text-info">
+								<code>Output: {morseMessage}</code>
+							</div>
+							<pre className="">
+								<code>Decoded: {decode(morseMessage)}</code>
+							</pre>
+						</div>
+					)}
+
+					{/*  */}
+					{/*  */}
+					<div className="flex flex-row gap-4 w-full">
+						<button className="btn btn-accent flex-1" type="button" onClick={playDi}>
+							<svg xmlns="http://www.w3.org/2000/svg" height={'1em'} className="inline-block align-[-0.125em]" viewBox="0 0 576 512">
+								<path d="M333.1 34.8C344.6 40 352 51.4 352 64V448c0 12.6-7.4 24-18.9 29.2s-25 3.1-34.4-5.3L163.8 352H96c-35.3 0-64-28.7-64-64V224c0-35.3 28.7-64 64-64h67.8L298.7 40.1c9.4-8.4 22.9-10.4 34.4-5.3zm172 72.2c43.2 35.2 70.9 88.9 70.9 149s-27.7 113.8-70.9 149c-10.3 8.4-25.4 6.8-33.8-3.5s-6.8-25.4 3.5-33.8C507.3 341.3 528 301.1 528 256s-20.7-85.3-53.2-111.8c-10.3-8.4-11.8-23.5-3.5-33.8s23.5-11.8 33.8-3.5zm-60.5 74.5C466.1 199.1 480 225.9 480 256s-13.9 56.9-35.4 74.5c-10.3 8.4-25.4 6.8-33.8-3.5s-6.8-25.4 3.5-33.8C425.1 284.4 432 271 432 256s-6.9-28.4-17.7-37.3c-10.3-8.4-11.8-23.5-3.5-33.8s23.5-11.8 33.8-3.5z" />
+							</svg>
+							<>Dot</>
+						</button>
+						<button className="btn btn-secondary flex-1" type="button" onClick={playDah}>
+							<svg xmlns="http://www.w3.org/2000/svg" height={'1em'} className="inline-block align-[-0.125em]" viewBox="0 0 576 512">
+								<path d="M333.1 34.8C344.6 40 352 51.4 352 64V448c0 12.6-7.4 24-18.9 29.2s-25 3.1-34.4-5.3L163.8 352H96c-35.3 0-64-28.7-64-64V224c0-35.3 28.7-64 64-64h67.8L298.7 40.1c9.4-8.4 22.9-10.4 34.4-5.3zm172 72.2c43.2 35.2 70.9 88.9 70.9 149s-27.7 113.8-70.9 149c-10.3 8.4-25.4 6.8-33.8-3.5s-6.8-25.4 3.5-33.8C507.3 341.3 528 301.1 528 256s-20.7-85.3-53.2-111.8c-10.3-8.4-11.8-23.5-3.5-33.8s23.5-11.8 33.8-3.5zm-60.5 74.5C466.1 199.1 480 225.9 480 256s-13.9 56.9-35.4 74.5c-10.3 8.4-25.4 6.8-33.8-3.5s-6.8-25.4 3.5-33.8C425.1 284.4 432 271 432 256s-6.9-28.4-17.7-37.3c-10.3-8.4-11.8-23.5-3.5-33.8s23.5-11.8 33.8-3.5z" />
+							</svg>
+							<>Dash</>
+						</button>
+					</div>
+
+					<button className="btn btn-info" type="button" onClick={handleGenerateAudio}>
+						GENERATE AUDIO
+					</button>
+					{/* <button className="btn btn-warning">REGENERATE AUDIO</button> */}
+				</form>
+
+				{/*  */}
+				{/*  */}
+				<div className="flex flex-col w-full">
+					{/* <div className="divider divider-primary">Output</div> */}
+					<div className="divider divider-primary" />
+				</div>
+
+				{/*  */}
+				{/*  */}
+				<div className="mockup-code">
+					<pre data-prefix="$" className="text-info">
+						<code>create morse media</code>
+					</pre>
+					<pre data-prefix=">" className="">
+						<code>converting text to morse code...</code>
+					</pre>
+					<pre data-prefix=">" className="text-info pre">
+						{/* <code className="loading loading-spinner loading-xs"></code> */}
+						<code className="loading loading-dots loading-xs"></code>
+					</pre>
+					<pre data-prefix=">" className="text-info">
+						<code>morse code: ...-- .-. --..- .-.. --.- --.</code>
+					</pre>
+					<pre data-prefix=">" className="">
+						<code>converting morse to audio...</code>
+					</pre>
+					<pre data-prefix=">" className="text-success">
+						<code>success!!!</code>
+					</pre>
+				</div>
+
+				{/*  */}
+				{/*  */}
+				{/* <button className="btn btn-success btn-lg">DOWNLOAD OUTPUT</button> */}
+				<button className="btn btn-success">DOWNLOAD OUTPUT</button>
+			</div>
+		</main>
+	)
 }
