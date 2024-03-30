@@ -52,6 +52,7 @@ export default function Home() {
 		<main className="flex min-h-screen flex-col items-center justify-between p-4 sm:p-8 md:p-16 lg:p-24">
 			<div className="max-w-5xl w-full flex flex-col bg-gray-800/30 border border-gray-800 gap-4 p-4 rounded-xl card">
 				<h1 className="text-3xl text-accent">Morse Media Maker</h1>
+				<h2 className="text-xl text-primary">Mmmmmmmm...</h2>
 				<div>
 					This website is dumb. It converts text to morse code, then converts the morse code to audio. You can preview the audio, download
 					it, and even play it in your browser.
