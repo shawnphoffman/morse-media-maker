@@ -107,11 +107,17 @@ export default function Home() {
 					<div className="flex flex-row gap-4 w-full">
 						<button className="btn btn-info flex-1 text-lg" type="button" onClick={playDi}>
 							<AudioIcon />
-							<>Preview Dot</>
+							<>
+								<span className="hidden sm:inline">Preview </span>
+								Dot
+							</>
 						</button>
 						<button className="btn btn-primary flex-1 text-lg" type="button" onClick={playDah}>
 							<AudioIcon />
-							<>Preview Dash</>
+							<>
+								<span className="hidden sm:inline">Preview </span>
+								Dash
+							</>
 						</button>
 					</div>
 
