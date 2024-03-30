@@ -18,12 +18,30 @@ const AudioIcon = () => {
 export default function Home() {
 	const [message, setMessage] = useState('')
 	const [output, setOutput] = useState<{ exported?: { blob: Blob } }>({})
+	const [theme, setTheme] = useState('ohyeah')
 
-	const [playDi] = useSound('/audio/di.mp3')
-	const [playDah] = useSound('audio/dah.mp3')
+	const clips = useMemo(() => {
+		if (theme === 'discord') {
+			return {
+				di: '/audio/di.mp3',
+				dah: '/audio/dah.mp3',
+			}
+		}
+		return {
+			di: '/audio/di-oh.mp3',
+			dah: '/audio/dah-oh.mp3',
+		}
+	}, [theme])
+
+	const [playDi] = useSound(clips.di)
+	const [playDah] = useSound(clips.dah)
 
 	const handleMessage = useCallback((e: any) => {
 		setMessage(e.target.value)
+	}, [])
+
+	const handleTheme = useCallback((e: any) => {
+		setTheme(e.target.value)
 	}, [])
 
 	const morseMessage = useMemo(() => {
@@ -31,10 +49,10 @@ export default function Home() {
 	}, [message])
 
 	const handleGenerateAudio = useCallback(async () => {
-		const response = await createMorseMedia(morseMessage)
-		console.log('handleGenerateAudio', response)
+		const response = await createMorseMedia(morseMessage, clips)
+		// console.log('handleGenerateAudio', response)
 		setOutput(() => response)
-	}, [morseMessage])
+	}, [clips, morseMessage])
 
 	const outputBlobUrl = useMemo(() => {
 		if (!output?.exported?.blob) return ''
@@ -51,16 +69,15 @@ export default function Home() {
 	return (
 		<main className="flex min-h-screen flex-col items-center justify-between p-4 sm:p-8 md:p-16 lg:p-24">
 			<div className="max-w-5xl w-full flex flex-col bg-gray-800/30 border border-gray-800 gap-4 p-4 rounded-xl card">
-				<h1 className="text-3xl text-accent">Morse Media Maker</h1>
-				<h2 className="text-xl text-primary">Mmmmmmmm...</h2>
+				<h1 className="text-4xl text-accent font-bold">Morse Media Maker</h1>
+				<h2 className="text-xl text-primary font-medium">Mmmmmmmm...</h2>
 				<div>
 					This website is dumb. It converts text to morse code, then converts the morse code to audio. You can preview the audio, download
 					it, and even play it in your browser.
 				</div>
 				<div>
-					Currently, the <span className="badge badge-info font-medium">dot</span> and{' '}
-					<span className="badge badge-primary font-medium">dash</span> audio files are hard-coded. I plan on making this customizable at
-					some point.
+					Currently, there are a limited set of <span className="badge badge-info font-medium">dot</span> and{' '}
+					<span className="badge badge-primary font-medium">dash</span> audio files. I plan on making this customizable at some point.
 				</div>
 				<form className="gap-4 flex flex-col">
 					{/*  */}
@@ -104,6 +121,33 @@ export default function Home() {
 					)}
 
 					{/*  */}
+					<label className="form-control w-full">
+						<div className="label">
+							<span className="label-text text-secondary">Audio Theme</span>
+						</div>
+						<div className="join w-full flex">
+							<input
+								className="join-item btn flex-1 text-lg"
+								type="radio"
+								name="options"
+								value="discord"
+								checked={theme === 'discord'}
+								onChange={handleTheme}
+								aria-label="Boop Boop"
+							/>
+							<input
+								className="join-item btn flex-1 text-lg"
+								type="radio"
+								name="options"
+								value="ohyeah"
+								checked={theme === 'ohyeah'}
+								onChange={handleTheme}
+								aria-label="Ho Yeah"
+							/>
+						</div>
+					</label>
+
+					{/*  */}
 					<div className="flex flex-row gap-4 w-full">
 						<button className="btn btn-info flex-1 text-lg" type="button" onClick={playDi}>
 							<AudioIcon />
@@ -112,7 +156,7 @@ export default function Home() {
 								Dot
 							</>
 						</button>
-						<button className="btn btn-primary flex-1 text-lg" type="button" onClick={playDah}>
+						<button className="btn btn-secondary flex-1 text-lg" type="button" onClick={playDah}>
 							<AudioIcon />
 							<>
 								<span className="hidden sm:inline">Preview </span>

@@ -1,11 +1,11 @@
 import Crunker from 'crunker'
 
-export const createMorseMedia = async (morseMessage: string) => {
+export const createMorseMedia = async (morseMessage: string, clips: { di: string; dah: string }) => {
 	const filesToJoin: AudioBuffer[] = []
 	let crunker = new Crunker()
 
-	const promDi = crunker.fetchAudio('/audio/di.mp3')
-	const promDah = crunker.fetchAudio('/audio/dah.mp3')
+	const promDi = crunker.fetchAudio(clips.di)
+	const promDah = crunker.fetchAudio(clips.dah)
 	const promGap = crunker.fetchAudio('/audio/gap.mp3')
 	const [buffDi, buffDah, buffGap] = await Promise.all([promDi, promDah, promGap])
 
