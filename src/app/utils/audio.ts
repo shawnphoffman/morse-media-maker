@@ -1,41 +1,31 @@
-// @ts-expect-error types
-import audioconcat from 'audioconcat'
-
-// @ts-expect-error mp3
-import di from './audio/di-deez.mp3'
-// @ts-expect-error mp3
-import dah from './audio/dah-boop.mp3'
-// @ts-expect-error mp3
-import gap from './audio/gap.mp3'
-
-const map = {
-	'.': di,
-	'-': dah,
-	' ': gap,
-} as const
+import Crunker from 'crunker'
 
 export const createMorseMedia = async (morseMessage: string) => {
-	const filesToJoin = []
+	const filesToJoin: AudioBuffer[] = []
+	let crunker = new Crunker()
+
+	const promDi = crunker.fetchAudio('/audio/di.mp3')
+	const promDah = crunker.fetchAudio('/audio/dah.mp3')
+	const promGap = crunker.fetchAudio('/audio/gap.mp3')
+	const [buffDi, buffDah, buffGap] = await Promise.all([promDi, promDah, promGap])
+
 	const pieces = morseMessage.split('')
-	for (const j in pieces) {
-		const i = pieces[j]
-		filesToJoin.push(map[i as keyof typeof map])
+
+	for (const i of pieces) {
+		if (i === '.') {
+			filesToJoin.push(buffDi[0])
+		} else if (i === '-') {
+			filesToJoin.push(buffDah[0])
+		} else {
+			filesToJoin.push(buffGap[0])
+		}
 	}
 
-	const output = await audioconcat(filesToJoin)
-		.concat('all.mp3')
-		.on('start', function (command: any) {
-			console.log('ffmpeg process started:', command)
-		})
-		.on('error', function (err: any) {
-			console.error('Error:', err)
-			// console.error('ffmpeg stderr:', stderr)
-		})
-	// .on('end', function (output: any) {
-	// 	console.error('Audio created in:', output)
-	// })
+	const merged = await crunker.concatAudio(filesToJoin)
+	const exported = await crunker.export(merged, 'audio/mp3')
 
-	console.log('createMorseMedia', { output, filesToJoin, morseMessage, di, dah, gap })
-
-	return 'TEST'
+	return {
+		merged,
+		exported,
+	}
 }
