@@ -123,9 +123,9 @@ export default function Home() {
 					{/*  */}
 					<label className="form-control w-full">
 						<div className="label">
-							<span className="label-text text-secondary">Audio Theme</span>
+							<span className="label-text text-secondary">What audio theme would you like to use?</span>
 						</div>
-						<div className="join w-full flex">
+						<div className="join w-full flex join-vertical lg:join-horizontal">
 							<input
 								className="join-item btn flex-1 text-lg"
 								type="radio"
