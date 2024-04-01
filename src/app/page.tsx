@@ -6,6 +6,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { decode, encode } from './utils/morse'
 import { createMorseMedia } from './utils/audio'
 import Crunker from 'crunker'
+import rot13Fast from './utils/rot'
 
 const AudioIcon = () => {
 	return (
@@ -62,9 +63,9 @@ export default function Home() {
 
 	const downloadOutput = useCallback(() => {
 		if (!output?.exported?.blob) return ''
-		let crunker = new Crunker()
-		crunker.download(output.exported.blob, `morse-output (${new Date().toLocaleString()}).mp3`)
-	}, [output])
+		const crunker = new Crunker()
+		crunker.download(output.exported.blob, `output [${rot13Fast(message)}] (${new Date().toLocaleString()})`)
+	}, [message, output])
 
 	return (
 		<main className="flex min-h-screen flex-col items-center justify-between p-4 sm:p-8 md:p-16 lg:p-24">
